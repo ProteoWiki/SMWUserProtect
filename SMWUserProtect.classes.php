@@ -31,6 +31,7 @@ class SMWUserProtect {
 		global $wgSMWUserProtectProps;
 		global $wgSMWUserProtectNS;
 		global $wgSMWUserProtectNSParent;
+		global $wgContLang;
 	
 		// Process user	
 		$usergrps = $user->getEffectiveGroups();
@@ -58,8 +59,9 @@ class SMWUserProtect {
 			}
 			
 		}
-		
-		
+
+		$check = true;
+
 		// Check NS
 		foreach ( $wgSMWUserProtectNS as $NStarget ) {
 		
@@ -67,12 +69,14 @@ class SMWUserProtect {
 		
 				// Case of page containing the property
 				foreach ( $wgSMWUserProtectProps as $prop ) {
-					self::getProperty( $fultitleText, $prop, $username );
+					if ( ! self::getProperty( $fulltitleText, $prop, $username ) ) {
+						$check = false;
+					}
 				}
 				
 				
 				// Case of page not containing the property -> but parents
-				if ( !in_array( $wgSMWUserProtectNSParent, $NStarget ) ) {
+				if ( !in_array( $NStarget, $wgSMWUserProtectNSParent ) ) {
 				
 					// If not a parent page
 					// We get the parent
@@ -83,8 +87,9 @@ class SMWUserProtect {
 						foreach ( $wgSMWUserProtectProps as $prop ) {
 		
 							$actualParent = SMWParent::getParent( $fulltitleText, $parentName );
-							
-							self::getProperty( $actualParent, $prop, $username );
+							if ( ! self::getProperty( $actualParent, $prop, $username ) ) {
+								$check = false;
+							}
 						}
 					
 					}
@@ -93,6 +98,7 @@ class SMWUserProtect {
 			}
 		}
 		
+		return $check; // We go ahead
 	}
 	
 	/**
@@ -102,8 +108,10 @@ class SMWUserProtect {
 	 * @return boolean
 	 */
 	
-	private function getProperty( $titleText, $prop ) {
-			
+	private static function getProperty( $titleText, $prop, $username ) {
+	
+		// Deal props with _
+		$prop = str_replace(" ", "_", $prop); 
 		$query_string = "[[".$titleText."]][[".$prop.":+]]";
 		
 		// Props to see
@@ -111,17 +119,18 @@ class SMWUserProtect {
 		array_push( $props, $prop );
 		
 		// Get a list of usernames
-		$usernames = self::processResults( $query_string, $prop, false );
-		
+		$usernames = self::processResults( $query_string, $props, false );
+
 		if ( count( $usernames ) > 0 ) {
 			
-			if ( in_array( $usernames, $username ) ) {
-				
+			if ( in_array( $username, $usernames ) ) {
 				// If there -> we allow
 				return true;
+			} else {
+				return false;
 			}
-		}		
-		
+		}
+		return true; // If 0 matches, return true
 	}
 	
 	
@@ -133,7 +142,7 @@ class SMWUserProtect {
 	 * @return usernames array
 	 */	
 	
-	static function processResults ( $query_string, $properties_to_display, $display_title ) {
+	private static function processResults ( $query_string, $properties_to_display, $display_title ) {
 		
 		// By default -> empty
 		$usernames = array();
