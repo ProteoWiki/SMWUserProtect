@@ -49,3 +49,9 @@ $wgSMWUserProtectProps = array( 'Has User' );
 // Namespaces with protection
 $wgSMWUserProtectNS = array( NS_REQUEST, NS_SAMPLE, NS_PROCESS );
 $wgSMWUserProtectNSParent = array( NS_REQUEST );
+
+$wgSMWUserProtectEditClose = array (
+	NS_REQUEST => array(
+		"Has Request Status" => array( "Accepted", "Closed", "Discarded" )
+	)
+);

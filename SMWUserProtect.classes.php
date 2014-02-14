@@ -31,6 +31,7 @@ class SMWUserProtect {
 		global $wgSMWUserProtectProps;
 		global $wgSMWUserProtectNS;
 		global $wgSMWUserProtectNSParent;
+		global $wgSMWUserProtectEditClose;
 		global $wgContLang;
 	
 		// Process user	
@@ -59,6 +60,33 @@ class SMWUserProtect {
 			}
 			
 		}
+
+		// We check FormEdit -> This we might improve detection -> Do for formedit!!!!
+		if ( $ns == -1  &&  strpos( $fulltitleText, "FormEdit" ) ) {
+			$titleparts = explode( "/", $fulltitleText );
+			$newTitle = end( $titleparts );
+			if ( $newTitle != '' ) {
+				$titleCheck = Title::newFromText( $newTitle );
+				$nsCheck = $titleCheck->getNamespace();
+
+				if ( isset( $wgSMWUserProtectEditClose[$nsCheck] ) ) {
+
+					foreach ( $wgSMWUserProtectEditClose[$nsCheck] as $propKey => $propValues ) {
+
+						$values = self::getPropertyValues( $newTitle, $propKey );
+						foreach ( $values as $value ) {
+
+							if ( in_array( $value, $propValues ) ){
+								echo "Stop here!";
+								return false; // If closing values found, close
+							}
+
+						}
+					}
+				}
+			}
+		}
+
 
 		$check = true;
 
@@ -97,7 +125,7 @@ class SMWUserProtect {
 				
 			}
 		}
-		
+
 		return $check; // We go ahead
 	}
 	
@@ -131,6 +159,30 @@ class SMWUserProtect {
 			}
 		}
 		return true; // If 0 matches, return true
+	}
+	
+
+	/**
+	 * getProperty function
+	 * @param $titleText string
+	 * @param $prop string
+	 * @return Array
+	 */
+	
+	private static function getPropertyValues( $titleText, $prop ) {
+	
+		// Deal props with _
+		$prop = str_replace(" ", "_", $prop); 
+		$query_string = "[[".$titleText."]][[".$prop.":+]]";
+		
+		// Props to see
+		$props = array();
+		array_push( $props, $prop );
+		
+		// Get a list of usernames
+		$values = self::processResultsGeneric( $query_string, $props, false );
+
+		return $values; // Return values
 	}
 	
 	
@@ -178,6 +230,46 @@ class SMWUserProtect {
 		return $usernames;
 		
 	}
+
+	/**
+	 * Function for processing query results
+	 * @param $query_string String : the query
+	 * @param $properties_to_display array(String): array of property names to display
+	 * @param $display_title Boolean : add the page title in the result
+	 * @return usernames array
+	 */	
+	
+	private static function processResultsGeneric( $query_string, $properties_to_display, $display_title ) {
+		
+		// By default -> empty
+		$values = array();
+		
+		$results = self::getQueryResults( $query_string, $properties_to_display, $display_title );
+		
+		// In theory, there is only one row
+		while ( $row = $results->getNext() ) {
+		
+			$Container = $row[1];
+		
+			if ( !empty( $Container ) ) {
+						
+				while ( $obj = $Container->getNextObject() ) {
+					
+					$value = $obj->getWikiValue();
+					
+					array_push( $values, $value );
+						
+					
+				}
+			} 
+		
+		}
+		
+		// Return list of usernames
+		return $values;
+		
+	}
+
 	
 	/**
 	 * This function returns to results of a certain query
