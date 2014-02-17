@@ -32,6 +32,7 @@ class SMWUserProtect {
 		global $wgSMWUserProtectNS;
 		global $wgSMWUserProtectNSParent;
 		global $wgSMWUserProtectEditClose;
+		global $wgSMWUserProtectUserPages;
 		global $wgContLang;
 	
 		// Process user	
@@ -57,12 +58,17 @@ class SMWUserProtect {
 			if ( $username == $titleText ) {
 				
 				return true;
+			} else {
+			
+				if ( $wgSMWUserProtectUserPages ) { 
+					return false;
+				}
 			}
 			
 		}
 
 		// We check FormEdit -> This we might improve detection -> Do for formedit!!!!
-		if ( $ns == -1  &&  strpos( $fulltitleText, "FormEdit" ) ) {
+		if ( ( $ns == -1  &&  strpos( $fulltitleText, "FormEdit" ) ) || $action == 'edit' ) {
 			$titleparts = explode( "/", $fulltitleText );
 			$newTitle = end( $titleparts );
 			if ( $newTitle != '' ) {
@@ -77,7 +83,6 @@ class SMWUserProtect {
 						foreach ( $values as $value ) {
 
 							if ( in_array( $value, $propValues ) ){
-								echo "Stop here!";
 								return false; // If closing values found, close
 							}
 
