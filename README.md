@@ -21,7 +21,7 @@ $GLOBALS['wgSMWUserProtectEditClose'] = array (
 	)
 );
 
-# If visiting user is not in the groups above, avoid reading User pages
+// If visiting user is not in the groups above, avoid reading User pages
 	$GLOBALS['wgSMWUserProtectUserPages'] = true;
 
 
