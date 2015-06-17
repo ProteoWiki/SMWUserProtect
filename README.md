@@ -19,11 +19,11 @@ Extension for protecting specifically pages from users depending on their semant
 
 // Edit prohibited depending on the value
 
-$GLOBALS['wgSMWUserProtectEditClose'] = array (
-	NS_REQUEST => array(
-		"Has Request Status" => array( "Accepted", "Closed", "Discarded" )
-	)
-);
+	$GLOBALS['wgSMWUserProtectEditClose'] = array (
+		NS_REQUEST => array(
+			"Has Request Status" => array( "Accepted", "Closed", "Discarded" )
+		)
+	);
 
 // If visiting user is not in the groups above, avoid reading User pages
 
