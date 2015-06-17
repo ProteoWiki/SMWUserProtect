@@ -53,6 +53,15 @@ call_user_func( function () {
 	$GLOBALS['wgSMWUserProtectUserPages'] = true;
 
 	// Hooks
-	$GLOBALS['wgHooks']['userCan'][] = 'SMWUserProtect::checkIfUserCan';
+	$GLOBALS['wgHooks']['userCan'][] = 'SMWUserProtectfunc';
 
 });
+
+function SMWUserProtectfunc( $title, $user, $action, &$result ) {
+
+	$object = new SMWUserProtect;
+	$result = $object->checkIfUserCan($title, $user);
+	return($result);
+
+}
+
