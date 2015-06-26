@@ -52,6 +52,9 @@ call_user_func( function () {
 	# If visiting user is not in the groups above, avoid reading User pages
 	$GLOBALS['wgSMWUserProtectUserPages'] = true;
 
+	# Block edition of user pages by non-owning users. It actually makes sense if previous wgSMWUserProtectUserPages is false
+	$GLOBALS['wgSMWUserProtectEditUserPages'] = true;
+
 	// Hooks
 	$GLOBALS['wgHooks']['userCan'][] = 'SMWUserProtectfunc';
 

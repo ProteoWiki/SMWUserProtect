@@ -28,3 +28,7 @@ Extension for protecting specifically pages from users depending on their semant
 // If visiting user is not in the groups above, avoid reading User pages
 
 	$GLOBALS['wgSMWUserProtectUserPages'] = true;
+
+// Block edition of user pages by non-owning users. It actually makes sense if previous wgSMWUserProtectUserPages is false
+
+	$GLOBALS['wgSMWUserProtectEditUserPages'] = true;

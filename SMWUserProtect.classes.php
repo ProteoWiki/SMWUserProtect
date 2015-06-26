@@ -33,6 +33,7 @@ class SMWUserProtect {
 		global $wgSMWUserProtectNSParent;
 		global $wgSMWUserProtectEditClose;
 		global $wgSMWUserProtectUserPages;
+		global $wgSMWUserProtectEditUserPages;
 		global $wgContLang;
 	
 		// Process user	
@@ -72,8 +73,20 @@ class SMWUserProtect {
 			$titleparts = explode( "/", $fulltitleText );
 			$newTitle = end( $titleparts );
 			if ( $newTitle != '' ) {
+
 				$titleCheck = Title::newFromText( $newTitle );
 				$nsCheck = $titleCheck->getNamespace();
+
+				// Check if user can edit
+				if ( $wgSMWUserProtectEditUserPages ) {
+
+					// Check user namespace
+					if ( $nsCheck == NS_USER ) {
+						if ( $username != $titleCheck ) {
+							return false; // Forbid editing
+						}
+					}
+				}
 
 				if ( isset( $wgSMWUserProtectEditClose[$nsCheck] ) ) {
 
