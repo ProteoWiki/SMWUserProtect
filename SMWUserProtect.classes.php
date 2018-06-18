@@ -25,7 +25,7 @@ class SMWUserProtect {
 	 * @return boolean
 	 */
 	
-	public function checkIfUserCan( &$title, &$user ) {
+	public function checkIfUserCan( &$title, &$user, &$action ) {
 
 		global $wgSMWUserProtectGroups;
 		global $wgSMWUserProtectProps;

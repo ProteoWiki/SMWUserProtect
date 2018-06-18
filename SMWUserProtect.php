@@ -20,7 +20,7 @@ call_user_func( function () {
 		'author' => array(
 			'[https://www.mediawiki.org/wiki/User:Toniher Toni Hermoso]'
 		),
-		'version' => '0.1.1',
+		'version' => '0.1.2',
 		'url' => 'https://www.mediawiki.org/wiki/Extension:SMWUserProtect',
 		'descriptionmsg' => 'SMWUserProtect-desc',
 	);
@@ -63,7 +63,7 @@ call_user_func( function () {
 function SMWUserProtectfunc( $title, $user, $action, &$result ) {
 
 	$object = new SMWUserProtect;
-	$result = $object->checkIfUserCan( $title, $user );
+	$result = $object->checkIfUserCan( $title, $user, $action );
 	return($result);
 
 }
